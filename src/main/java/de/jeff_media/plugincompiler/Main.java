@@ -63,12 +63,12 @@ public class Main {
 
         final String mavenExecutable = findExecutableOnPath("mvn");
 
-        banner("Running mvn clean on original source...");
+        /*banner("Running mvn clean on original source...");
         mavenRequest = new DefaultInvocationRequest();
         mavenRequest.setPomFile(new File(dir, "pom.xml"));
         mavenRequest.setGoals(Collections.singletonList("clean"));
         maven.execute(mavenRequest);
-        System.out.println("Done.");
+        System.out.println("Done.");*/
 
         banner("Cleaning up old build directories...");
         freeDir = new File(dir.getAbsolutePath() + " Free");
@@ -85,6 +85,9 @@ public class Main {
         FileUtils.copyFile(new File(dir,"pom.xml"),new File(freeDir,"pom.xml"));
         FileUtils.copyFile(new File(dir,"pom.xml"),new File(plusDir,"pom.xml"));
         System.out.println("Done.");
+
+        banner("Removing files from free version...");
+        new File(new File(new File(new File(freeDir,"main"),"java"),"resources"),"discord-verification.html").delete();
 
         banner("Patching source code for free version...");
         for (File file : FileUtils.listFiles(freeDir, null, true)) {
@@ -164,7 +167,6 @@ public class Main {
         mavenRequest.setGoals(goals);
         maven.execute(mavenRequest);
         System.out.println("Done.");
-
     }
 
     private enum FileType {
@@ -198,7 +200,4 @@ public class Main {
             return UNKNOWN;
         }
     }
-
-
-
 }
