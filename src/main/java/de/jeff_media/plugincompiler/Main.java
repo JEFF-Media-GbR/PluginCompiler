@@ -63,13 +63,6 @@ public class Main {
 
         final String mavenExecutable = findExecutableOnPath("mvn");
 
-        /*banner("Running mvn clean on original source...");
-        mavenRequest = new DefaultInvocationRequest();
-        mavenRequest.setPomFile(new File(dir, "pom.xml"));
-        mavenRequest.setGoals(Collections.singletonList("clean"));
-        maven.execute(mavenRequest);
-        System.out.println("Done.");*/
-
         banner("Cleaning up old build directories...");
         freeDir = new File(dir.getAbsolutePath() + " Free");
         plusDir = new File(dir.getAbsolutePath() + " Plus");
@@ -110,14 +103,14 @@ public class Main {
                     commonCode = true;
                 }
 
-                if (line.contains("import de.jeff_media.daddy.Daddy;")) {
+                if (line.contains("import de.jeff_media.daddy.Stepsister;")) {
                     continue;
                 }
 
                 // Remove premium features
-                if (line.contains("Daddy.allows")) {
+                if (line.contains("Stepsister.allows")) {
                     daddyAllowsRemoved++;
-                    line = line.replaceAll("Daddy\\.allows\\((.*?)\\)", "false");
+                    line = line.replaceAll("Stepsister\\.allows\\((.*?)\\)", "false");
                 }
 
                 String startComment = "";
@@ -146,7 +139,7 @@ public class Main {
             fileOut.write(inputBuffer.toString().getBytes());
             fileOut.close();
             if (daddyAllowsRemoved > 0) {
-                System.out.println(file.getName() + ": Replaced " + daddyAllowsRemoved + " Daddy.allows(...) checks with false");
+                System.out.println(file.getName() + ": Replaced " + daddyAllowsRemoved + " Stepsister.allows(...) checks with false");
             }
             if (linesRemovedTotal > 0) {
                 System.out.println(file.getName() + ": Commented out " + linesRemovedTotal + " lines");
