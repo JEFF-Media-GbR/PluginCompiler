@@ -15,6 +15,7 @@ import java.util.List;
 public class Main {
 
     private File dir, freeDir, plusDir;
+    private static String version = "";
 
     public static void main(String[] args) {
         Main compiler = new Main();
@@ -25,6 +26,7 @@ public class Main {
         }
 
         String pluginDirectory = args[0];
+        if(args.length>1) version = args[1];
 
         try {
             compiler.run(pluginDirectory);
@@ -73,11 +75,22 @@ public class Main {
         banner("Copying source code...");
         freeDir.mkdir();
         plusDir.mkdir();
-        FileUtils.copyDirectory(new File(dir,"src"), new File(freeDir,"src"));
+        System.out.println("Waiting 1000ms...");
+        Thread.sleep(1000);
+
+        System.out.println("Copying plus files...");
+        Thread.sleep(1000);
         FileUtils.copyDirectory(new File(dir,"src"), new File(plusDir,"src"));
-        FileUtils.copyFile(new File(dir,"pom.xml"),new File(freeDir,"pom.xml"));
+        FileUtils.copyDirectory(new File(dir,"allatori"), new File(plusDir,"allatori"));
         FileUtils.copyFile(new File(dir,"pom.xml"),new File(plusDir,"pom.xml"));
+        Thread.sleep(1000);
         System.out.println("Done.");
+
+        System.out.println("Copying free files...");
+        Thread.sleep(1000);
+        FileUtils.copyDirectory(new File(dir,"src"), new File(freeDir,"src"));
+        FileUtils.copyFile(new File(dir,"pom.xml"),new File(freeDir,"pom.xml"));
+        Thread.sleep(1000);
 
         banner("Removing files from free version...");
         new File(new File(new File(new File(freeDir,"main"),"java"),"resources"),"discord-verification.html").delete();
@@ -152,14 +165,38 @@ public class Main {
         mavenRequest.setPomFile(new File(plusDir, "pom.xml"));
         mavenRequest.setGoals(goals);
         maven.execute(mavenRequest);
+        System.out.println("Running allatori on Plus version...");
+        File allatoriXml = new File(new File(plusDir,"target"),"allatori.xml");
+        new File(new File(plusDir,"allatori"),"allatori-plus.xml").renameTo(allatoriXml);
+        replaceVersionInAllatoriXml(allatoriXml);
+        ProcessBuilder pb = new ProcessBuilder("java","-Xms128M", "-Xmx512M","-jar", "allatori/allatori.jar", "target/allatori.xml");
+        pb.directory(plusDir);
+        pb.inheritIO();
+        Process p = pb.start();
+        p.waitFor();
         System.out.println("Done.");
 
         banner("Compiling Free version...");
+        FileUtils.copyDirectory(new File(dir,"allatori"), new File(freeDir,"allatori"));
         mavenRequest = new DefaultInvocationRequest();
         mavenRequest.setPomFile(new File(freeDir, "pom.xml"));
         mavenRequest.setGoals(goals);
         maven.execute(mavenRequest);
+        System.out.println("Running allatori on Free version...");
+        new File(new File(plusDir,"allatori"),"allatori-free.xml").renameTo(allatoriXml);
+        replaceVersionInAllatoriXml(allatoriXml);
+        pb = new ProcessBuilder("java","-Xms128M", "-Xmx512M","-jar", "allatori/allatori.jar", "target/allatori.xml");
+        pb.directory(freeDir);
+        pb.inheritIO();
+        p = pb.start();
+        p.waitFor();
         System.out.println("Done.");
+    }
+
+    private void replaceVersionInAllatoriXml(File allatoriXml) throws IOException {
+        String content = FileUtils.readFileToString(allatoriXml, "UTF-8");
+        content = content.replace("{project.version}",version);
+        FileUtils.writeStringToFile(allatoriXml, content, "UTF-8");
     }
 
     private enum FileType {
