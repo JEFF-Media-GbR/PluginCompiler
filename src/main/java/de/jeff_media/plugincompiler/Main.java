@@ -183,7 +183,8 @@ public class Main {
         mavenRequest.setGoals(goals);
         maven.execute(mavenRequest);
         System.out.println("Running allatori on Free version...");
-        new File(new File(plusDir,"allatori"),"allatori-free.xml").renameTo(allatoriXml);
+        allatoriXml = new File(new File(freeDir,"target"),"allatori.xml");
+        new File(new File(freeDir,"allatori"),"allatori-free.xml").renameTo(allatoriXml);
         replaceVersionInAllatoriXml(allatoriXml);
         pb = new ProcessBuilder("java","-Xms128M", "-Xmx512M","-jar", "allatori/allatori.jar", "target/allatori.xml");
         pb.directory(freeDir);
@@ -195,7 +196,7 @@ public class Main {
 
     private void replaceVersionInAllatoriXml(File allatoriXml) throws IOException {
         String content = FileUtils.readFileToString(allatoriXml, "UTF-8");
-        content = content.replace("{project.version}",version);
+        content = content.replace("${project.version}",version);
         FileUtils.writeStringToFile(allatoriXml, content, "UTF-8");
     }
 
