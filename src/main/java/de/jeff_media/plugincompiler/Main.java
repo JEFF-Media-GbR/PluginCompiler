@@ -116,7 +116,11 @@ public class Main {
                     commonCode = true;
                 }
 
-                if (line.contains("import de.jeff_media.daddy.Stepsister;")) {
+                if (line.contains("import de.jeff_media.daddy.")) {
+                    continue;
+                }
+
+                if (line.contains("CallHome.callHome(")) {
                     continue;
                 }
 
