@@ -31,6 +31,7 @@
                 <version>3.1.0</version>
                 <configuration>
                     <finalName>${project.name}</finalName>
+                    <outputDirectory>${project.basedir}/../</outputDirectory>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>

@@ -8,6 +8,8 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.Invoker;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -105,7 +107,9 @@ public class Main {
 
             boolean commonCode = true;
 
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(isr);
             StringBuilder inputBuffer = new StringBuilder();
             String line;
 
@@ -121,6 +125,10 @@ public class Main {
                 }
 
                 if (line.contains("CallHome.callHome(")) {
+                    continue;
+                }
+
+                if(line.contains("Chicken.wing(")) {
                     continue;
                 }
 
@@ -152,8 +160,9 @@ public class Main {
             bufferedReader.close();
 
             // write the new string with the replaced line OVER the same file
-            FileOutputStream fileOut = new FileOutputStream(file);
-            fileOut.write(inputBuffer.toString().getBytes());
+            OutputStreamWriter fileOut =
+                    new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);
+            fileOut.write(inputBuffer.toString());
             fileOut.close();
             if (daddyAllowsRemoved > 0) {
                 System.out.println(file.getName() + ": Replaced " + daddyAllowsRemoved + " Stepsister.allows(...) checks with false");
