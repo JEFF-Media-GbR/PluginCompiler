@@ -133,9 +133,9 @@ public class Main {
                 }
 
                 // Remove premium features
-                if (line.contains("Stepsister.allows")) {
+                if (line.contains("Daddy_Stepsister.allows")) {
                     daddyAllowsRemoved++;
-                    line = line.replaceAll("Stepsister\\.allows\\((.*?)\\)", "false");
+                    line = line.replaceAll("Daddy_Stepsister\\.allows\\((.*?)\\)", "false");
                 }
 
                 String startComment = "";
